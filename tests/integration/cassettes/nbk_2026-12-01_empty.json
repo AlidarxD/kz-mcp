@@ -1,0 +1,15 @@
+{
+ "request": {
+  "method": "GET",
+  "url": "https://nationalbank.kz/rss/get_rates.cfm",
+  "params": {
+   "fdate": "01.12.2026"
+  }
+ },
+ "response": {
+  "status": 200,
+  "content_type": "text/xml; charset=utf-8",
+  "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<rates>\n    <generator>Alternate RSS Builder</generator>\n    <title>Official exchange rates of National Bank of Republic Kazakhstan</title>\n    <link>www.nationalbank.kz</link>\n    <description>Official exchange rates of National Bank of Republic Kazakhstan</description>\n    <copyright>www.nationalbank.kz</copyright>\n    <date>01.12.2026</date>\n\n            <info>на выбранную дату информации нет.</info>\n    </rates>\n"
+ },
+ "recorded_at": "2026-11-22T15:29:34+00:00"
+}

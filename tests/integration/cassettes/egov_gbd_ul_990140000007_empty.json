@@ -1,0 +1,15 @@
+{
+ "request": {
+  "method": "GET",
+  "url": "https://data.egov.kz/api/detailed/gbd_ul/v1",
+  "params": {
+   "source": "{\"size\":10,\"query\":{\"term\":{\"bin\":\"990140000007\"}}}"
+  }
+ },
+ "response": {
+  "status": 200,
+  "content_type": "application/json; charset=UTF-8",
+  "body": "{\"data\":[],\"totalCount\":0}"
+ },
+ "recorded_at": "2026-11-22T15:29:34+00:00"
+}

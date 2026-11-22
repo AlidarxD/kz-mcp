@@ -32,3 +32,17 @@ class Settings(BaseSettings):
     law_models_cache_dir: Path | None = None
     law_onnx_threads: int | None = None
     law_warmup: bool = Field(False, description="Load retrieval models at startup")
+
+    # Upstream HTTP
+    http_timeout_s: float = Field(10.0, gt=0, le=60)
+    http_connect_timeout_s: float = Field(5.0, gt=0, le=30)
+    http_retries: int = Field(3, ge=1, le=6, description="Attempts per upstream request")
+    offline: bool = Field(False, description="Serve bundled snapshots only, no network")
+
+    # Cache
+    redis_url: str | None = Field(None, description="redis://…; in-process cache if unset")
+    cache_prefix: str = "kzmcp:"
+    rates_ttl_s: int = Field(3600, description="Today's and tomorrow's rates")
+    rates_history_ttl_s: int = Field(30 * 86400, description="Rates of past days")
+    company_ttl_s: int = 86400
+    stale_ttl_s: int = Field(7 * 86400, description="Last good copy kept for outages")
