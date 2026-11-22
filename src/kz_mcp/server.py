@@ -9,15 +9,19 @@ from pydantic import ConfigDict
 
 from kz_mcp import __version__, prompts, resources
 from kz_mcp.retrieval import LawRetriever, build_retriever
+from kz_mcp.services import Services
 from kz_mcp.settings import Settings
-from kz_mcp.tools import law
+from kz_mcp.tools import company, law, rates
 
 INSTRUCTIONS = """\
 Tools over Kazakhstan public data. Legislation: search_law finds articles of the
 Constitution and the Civil, Labour, Tax, Criminal and Administrative Offences codes in
 Russian (ru) or Kazakh (kk); get_law_article returns the full current text. Always cite
 articles by citation_id and url, answer only from returned text, and say when the
-retrieved articles do not answer the question. Nothing here is legal advice."""
+retrieved articles do not answer the question. exchange_rates gives official National
+Bank rates; company_by_bin looks up a legal entity by BIN. Results from external sources
+carry `source.status`: mention it when the data is a stale or snapshot copy. Nothing here
+is legal advice."""
 
 
 def harden_input_schemas(server: MCPServer) -> None:
@@ -38,10 +42,13 @@ def harden_input_schemas(server: MCPServer) -> None:
 
 
 def build_server(
-    settings: Settings | None = None, retriever: LawRetriever | None = None
+    settings: Settings | None = None,
+    retriever: LawRetriever | None = None,
+    services: Services | None = None,
 ) -> MCPServer:
     settings = settings or Settings()
     retriever = retriever or build_retriever(settings)
+    svc = services or Services(settings)
     server = MCPServer(
         name="kz-mcp",
         title="Kazakhstan public data",
@@ -50,8 +57,11 @@ def build_server(
         version=__version__,
         website_url="https://github.com/AlidarXD/kz-mcp",
         log_level=settings.log_level,
+        lifespan=lambda _app: svc.lifespan(),
     )
     law.register(server, retriever)
+    rates.register(server, svc)
+    company.register(server, svc)
     resources.register(server, retriever)
     prompts.register(server)
     harden_input_schemas(server)

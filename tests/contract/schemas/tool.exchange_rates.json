@@ -1,0 +1,224 @@
+{
+  "annotations": {
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": true,
+    "readOnlyHint": true
+  },
+  "description": "Official exchange rates of the National Bank of Kazakhstan: tenge (KZT) per unit of foreign currency, for a date (default: today in Almaty; the National Bank publishes the next day's rates in advance). Optionally filter by ISO currency codes.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "currencies": {
+        "anyOf": [
+          {
+            "items": {
+              "description": "ISO 4217, e.g. USD",
+              "pattern": "^[A-Za-z]{3}$",
+              "type": "string"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "type": "array"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Only these currencies",
+        "title": "Currencies"
+      },
+      "date": {
+        "anyOf": [
+          {
+            "format": "date",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "YYYY-MM-DD; default today (Asia/Almaty)",
+        "title": "Date"
+      }
+    },
+    "title": "exchange_ratesArguments",
+    "type": "object"
+  },
+  "name": "exchange_rates",
+  "outputSchema": {
+    "$defs": {
+      "ExchangeRate": {
+        "additionalProperties": false,
+        "properties": {
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Change of `rate` against the previous rate",
+            "title": "Change"
+          },
+          "code": {
+            "description": "ISO 4217 currency code",
+            "title": "Code",
+            "type": "string"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "enum": [
+                  "up",
+                  "down",
+                  "unchanged"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          },
+          "kzt_per_unit": {
+            "description": "Tenge for one unit of the currency",
+            "title": "Kzt Per Unit",
+            "type": "number"
+          },
+          "name": {
+            "description": "Currency name as published by the National Bank (Russian)",
+            "title": "Name",
+            "type": "string"
+          },
+          "quant": {
+            "title": "Quant",
+            "type": "integer"
+          },
+          "rate": {
+            "description": "Official rate: tenge for `quant` units",
+            "title": "Rate",
+            "type": "number"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "kzt_per_unit",
+          "rate",
+          "quant",
+          "change",
+          "direction"
+        ],
+        "title": "ExchangeRate",
+        "type": "object"
+      },
+      "SourceInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "fetched_at": {
+            "description": "When the data was fetched from the upstream",
+            "format": "date-time",
+            "title": "Fetched At",
+            "type": "string"
+          },
+          "name": {
+            "description": "Publisher of the data",
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "description": "live: fetched now; cache: fresh cached copy; stale: upstream failed, last good copy served; snapshot: upstream failed, bundled recorded copy served",
+            "enum": [
+              "live",
+              "cache",
+              "stale",
+              "snapshot"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "url": {
+            "description": "Upstream endpoint",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "url",
+          "status",
+          "fetched_at"
+        ],
+        "title": "SourceInfo",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "base": {
+        "const": "KZT",
+        "default": "KZT",
+        "title": "Base",
+        "type": "string"
+      },
+      "date": {
+        "description": "Date the rates apply to",
+        "format": "date",
+        "title": "Date",
+        "type": "string"
+      },
+      "missing": {
+        "description": "Requested currencies the National Bank does not quote",
+        "items": {
+          "type": "string"
+        },
+        "title": "Missing",
+        "type": "array"
+      },
+      "notice": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Set when the data is not the live answer",
+        "title": "Notice"
+      },
+      "rates": {
+        "items": {
+          "$ref": "#/$defs/ExchangeRate"
+        },
+        "title": "Rates",
+        "type": "array"
+      },
+      "requested_date": {
+        "format": "date",
+        "title": "Requested Date",
+        "type": "string"
+      },
+      "source": {
+        "$ref": "#/$defs/SourceInfo"
+      }
+    },
+    "required": [
+      "date",
+      "requested_date",
+      "rates",
+      "missing",
+      "source",
+      "notice"
+    ],
+    "title": "ExchangeRatesResult",
+    "type": "object"
+  },
+  "title": "National Bank exchange rates"
+}

@@ -5,8 +5,8 @@ Claude Code, Cursor, …) access to Kazakhstan public data:
 
 - **Legislation**: hybrid search over the Constitution and the Civil, Labour, Tax, Criminal and
   Administrative Offences codes, in Russian and Kazakh, with stable citation ids
-- **Exchange rates**: official National Bank of Kazakhstan rates *(M2)*
-- **Legal entities**: lookup by BIN in the public registry *(M2)*
+- **Exchange rates**: official National Bank of Kazakhstan rates
+- **Legal entities**: lookup by BIN in the State Database of Legal Entities (data.egov.kz open data)
 
 The server makes **no LLM calls**: every tool is deterministic code or a local model, and the
 client's LLM does the reasoning. Targets MCP spec **2026-07-28** (Python SDK `mcp` 2.x).
@@ -40,6 +40,13 @@ claude mcp add kz-mcp -- uv --directory /path/to/kz-mcp run kz-mcp
 |---|---|
 | `search_law(query, lang, code?, top_k)` | articles answering a question: code, article number, heading, snippet, adilet.zan.kz link, citation id |
 | `get_law_article(code, article_number, lang)` | full current text of one article with a stable citation id |
+| `exchange_rates(date?, currencies?)` | official NBK rates, KZT per unit |
+| `company_by_bin(bin)` | legal entity by BIN (checksum validated before any request) |
+
+External sources go through one fallback chain: cache (Redis or in-process) → live request
+(timeouts, retries with exponential backoff + jitter) → last good copy → bundled snapshot.
+Every result reports `source.status` = `live` / `cache` / `stale` / `snapshot`.
+`KZ_MCP_OFFLINE=true` serves snapshots only.
 
 Resources: `kzlaw://codes`, `kzlaw://codes/{code}/{lang}`. Prompts: `explain_article`,
 `legal_question`, `compare_languages`.

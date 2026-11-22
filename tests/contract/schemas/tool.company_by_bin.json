@@ -1,0 +1,257 @@
+{
+  "annotations": {
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": true,
+    "readOnlyHint": true
+  },
+  "description": "Look up a legal entity of Kazakhstan by its 12-digit BIN (business identification number) in the State Database of Legal Entities, published as open data on data.egov.kz: names (RU/KK), director, main activity, address, status, registration date. The BIN checksum is validated first. Individuals (IIN) are not supported.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "bin": {
+        "description": "12-digit BIN; spaces and dashes are ignored",
+        "maxLength": 16,
+        "minLength": 12,
+        "pattern": "^[0-9][0-9 -]{10,14}[0-9]$",
+        "title": "Bin",
+        "type": "string"
+      }
+    },
+    "required": [
+      "bin"
+    ],
+    "title": "company_by_binArguments",
+    "type": "object"
+  },
+  "name": "company_by_bin",
+  "outputSchema": {
+    "$defs": {
+      "CompanyRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "activity_kk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Kk"
+          },
+          "activity_ru": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Main activity (OKED)",
+            "title": "Activity Ru"
+          },
+          "address_kk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Kk"
+          },
+          "address_ru": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address Ru"
+          },
+          "bin": {
+            "title": "Bin",
+            "type": "string"
+          },
+          "director": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Head of the legal entity as registered",
+            "title": "Director"
+          },
+          "name_kk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name Kk"
+          },
+          "name_ru": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name Ru"
+          },
+          "registered_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registered On"
+          },
+          "status_kk": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Kk"
+          },
+          "status_ru": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Registration status, e.g. Зарегистрирован",
+            "title": "Status Ru"
+          }
+        },
+        "required": [
+          "bin",
+          "name_ru",
+          "name_kk",
+          "director",
+          "activity_ru",
+          "activity_kk",
+          "address_ru",
+          "address_kk",
+          "status_ru",
+          "status_kk",
+          "registered_on"
+        ],
+        "title": "CompanyRecord",
+        "type": "object"
+      },
+      "SourceInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "fetched_at": {
+            "description": "When the data was fetched from the upstream",
+            "format": "date-time",
+            "title": "Fetched At",
+            "type": "string"
+          },
+          "name": {
+            "description": "Publisher of the data",
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "description": "live: fetched now; cache: fresh cached copy; stale: upstream failed, last good copy served; snapshot: upstream failed, bundled recorded copy served",
+            "enum": [
+              "live",
+              "cache",
+              "stale",
+              "snapshot"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "url": {
+            "description": "Upstream endpoint",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "url",
+          "status",
+          "fetched_at"
+        ],
+        "title": "SourceInfo",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "bin": {
+        "title": "Bin",
+        "type": "string"
+      },
+      "entity_type": {
+        "description": "Derived from the 5th digit of the BIN",
+        "enum": [
+          "resident_legal_entity",
+          "non_resident_legal_entity",
+          "joint_entrepreneurship"
+        ],
+        "title": "Entity Type",
+        "type": "string"
+      },
+      "found": {
+        "title": "Found",
+        "type": "boolean"
+      },
+      "notice": {
+        "title": "Notice",
+        "type": "string"
+      },
+      "records": {
+        "description": "Registry records for this BIN; several records mean re-registrations or changed details, listed as published",
+        "items": {
+          "$ref": "#/$defs/CompanyRecord"
+        },
+        "title": "Records",
+        "type": "array"
+      },
+      "source": {
+        "$ref": "#/$defs/SourceInfo"
+      }
+    },
+    "required": [
+      "bin",
+      "entity_type",
+      "found",
+      "records",
+      "source",
+      "notice"
+    ],
+    "title": "CompanyResult",
+    "type": "object"
+  },
+  "title": "Company lookup by BIN"
+}

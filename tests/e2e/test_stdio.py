@@ -32,3 +32,15 @@ async def test_stdio_server_end_to_end() -> None:
 
         bad = await client.call_tool("get_law_article", {"code": "labour", "article_number": "0"})
         assert bad.is_error
+
+
+async def test_stdio_offline_mode_serves_snapshots() -> None:
+    env = {k: v for k, v in os.environ.items() if not k.startswith("KZ_MCP_")}
+    env |= {"KZ_MCP_RETRIEVER": "fixture", "KZ_MCP_OFFLINE": "true", "KZ_MCP_LOG_LEVEL": "ERROR"}
+    params = StdioServerParameters(command=sys.executable, args=["-m", "kz_mcp"], env=env)
+    async with Client(params) as client:
+        rates = await client.call_tool("exchange_rates", {"currencies": ["USD"]})
+        assert not rates.is_error
+        assert rates.structured_content["source"]["status"] == "snapshot"
+        company = await client.call_tool("company_by_bin", {"bin": "000740000728"})
+        assert company.structured_content["found"] is True
