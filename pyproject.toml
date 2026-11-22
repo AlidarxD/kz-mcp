@@ -1,0 +1,83 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kz-mcp"
+version = "0.1.0"
+description = "MCP server for Kazakhstan public data: legislation search, NBK exchange rates, legal-entity registry"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Alidar" }]
+keywords = ["mcp", "model-context-protocol", "kazakhstan", "legal", "open-data"]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "mcp>=2.3,<3",
+    "pydantic>=2.8",
+    "pydantic-settings>=2.4",
+    "anyio>=4.4",
+]
+
+[project.optional-dependencies]
+# Real legal retrieval (BM25 + e5 ONNX + RRF + cross-encoder) from kz-law-llm.
+# kz-law-llm is private for now: resolved from a local checkout via [tool.uv.sources].
+law = ["kz-law-retrieval[dense]"]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "pre-commit>=3.8",
+]
+
+[project.scripts]
+kz-mcp = "kz_mcp.cli:main"
+
+[tool.uv.sources]
+kz-law-retrieval = { path = "../kz-law-llm/packages/kz-law-retrieval", editable = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kz_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "e2e: spawns the server as a subprocess",
+]
+filterwarnings = ["error::pytest.PytestUnraisableExceptionWarning"]
+
+[tool.coverage.run]
+source = ["kz_mcp"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "\\.\\.\\."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "S", "PT", "ASYNC"]
+ignore = ["RUF001", "RUF002", "RUF003"]  # Cyrillic text is intentional
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S603", "PT018"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["kz_law_retrieval", "kz_law_retrieval.*"]
+ignore_missing_imports = true
