@@ -4,11 +4,11 @@
 !.env.example
 
 # Indexes, models, data (never committed)
-data/
-models/
+/data/
+/models/
 *.onnx
 *.npy
-qdrant/
+/qdrant/
 
 # Python
 __pycache__/
