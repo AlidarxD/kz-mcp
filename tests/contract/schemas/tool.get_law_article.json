@@ -1,0 +1,147 @@
+{
+  "annotations": {
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false,
+    "readOnlyHint": true
+  },
+  "description": "Full current text of one article of a Kazakhstan code, with a stable citation id\n        and a link to adilet.zan.kz.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "article_number": {
+        "description": "Article number as written in the act, e.g. '88' or '18-1'",
+        "maxLength": 20,
+        "minLength": 1,
+        "pattern": "^[0-9]+(-[0-9]+)*$|^Преамбула$",
+        "title": "Article Number",
+        "type": "string"
+      },
+      "code": {
+        "description": "Legal act: an alias (labour, tax, …) or an Adilet document code",
+        "enum": [
+          "constitution",
+          "civil-general",
+          "civil-special",
+          "labour",
+          "administrative",
+          "criminal",
+          "tax",
+          "K2600000000",
+          "K940001000_",
+          "K990000409_",
+          "K1500000414",
+          "K1400000235",
+          "K1400000226",
+          "K2500000214"
+        ],
+        "title": "Code",
+        "type": "string"
+      },
+      "lang": {
+        "default": "ru",
+        "description": "Language of the query and of the returned text",
+        "enum": [
+          "ru",
+          "kk"
+        ],
+        "title": "Lang",
+        "type": "string"
+      }
+    },
+    "required": [
+      "code",
+      "article_number"
+    ],
+    "title": "get_law_articleArguments",
+    "type": "object"
+  },
+  "name": "get_law_article",
+  "outputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "article_number": {
+        "title": "Article Number",
+        "type": "string"
+      },
+      "citation_id": {
+        "title": "Citation Id",
+        "type": "string"
+      },
+      "code": {
+        "title": "Code",
+        "type": "string"
+      },
+      "code_alias": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Code Alias"
+      },
+      "heading": {
+        "title": "Heading",
+        "type": "string"
+      },
+      "hierarchy": {
+        "description": "Part › section › chapter of the act",
+        "items": {
+          "type": "string"
+        },
+        "title": "Hierarchy",
+        "type": "array"
+      },
+      "lang": {
+        "enum": [
+          "ru",
+          "kk"
+        ],
+        "title": "Lang",
+        "type": "string"
+      },
+      "law_title": {
+        "title": "Law Title",
+        "type": "string"
+      },
+      "source": {
+        "description": "Where the text comes from",
+        "title": "Source",
+        "type": "string"
+      },
+      "text": {
+        "description": "Full current text of the article",
+        "title": "Text",
+        "type": "string"
+      },
+      "title": {
+        "title": "Title",
+        "type": "string"
+      },
+      "url": {
+        "title": "Url",
+        "type": "string"
+      }
+    },
+    "required": [
+      "citation_id",
+      "code",
+      "code_alias",
+      "law_title",
+      "article_number",
+      "title",
+      "heading",
+      "hierarchy",
+      "lang",
+      "text",
+      "url",
+      "source"
+    ],
+    "title": "LawArticle",
+    "type": "object"
+  },
+  "title": "Get an article of Kazakhstan legislation"
+}

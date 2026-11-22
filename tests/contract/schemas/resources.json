@@ -1,0 +1,20 @@
+{
+  "resources": [
+    {
+      "description": "Legal acts of Kazakhstan available to search_law, per language",
+      "mimeType": "application/json",
+      "name": "law_codes",
+      "title": "Indexed legal acts",
+      "uri": "kzlaw://codes"
+    }
+  ],
+  "templates": [
+    {
+      "description": "Article numbers, headings and citation ids of one act in one language (code: alias or Adilet code; lang: ru|kk)",
+      "mimeType": "application/json",
+      "name": "law_code_contents",
+      "title": "Table of contents of a legal act",
+      "uriTemplate": "kzlaw://codes/{code}/{lang}"
+    }
+  ]
+}

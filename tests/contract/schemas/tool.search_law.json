@@ -1,0 +1,205 @@
+{
+  "annotations": {
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false,
+    "readOnlyHint": true
+  },
+  "description": "Find the articles of Kazakhstan's codes (Constitution, Civil, Labour, Tax,\n        Criminal, Administrative Offences) that answer a question, in Russian or Kazakh.\n\n        Hybrid search (BM25 + multilingual embeddings, reranked by a cross-encoder) over the\n        current editions from adilet.zan.kz. Returns snippets; call get_law_article for the\n        full text, and cite articles by citation_id and url. Not legal advice.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "code": {
+        "anyOf": [
+          {
+            "enum": [
+              "constitution",
+              "civil-general",
+              "civil-special",
+              "labour",
+              "administrative",
+              "criminal",
+              "tax",
+              "K2600000000",
+              "K940001000_",
+              "K990000409_",
+              "K1500000414",
+              "K1400000235",
+              "K1400000226",
+              "K2500000214"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Restrict the search to one legal act",
+        "title": "Code"
+      },
+      "lang": {
+        "default": "ru",
+        "description": "Language of the query and of the returned text",
+        "enum": [
+          "ru",
+          "kk"
+        ],
+        "title": "Lang",
+        "type": "string"
+      },
+      "query": {
+        "description": "Question or keywords in Russian or Kazakh, e.g. 'сколько дней отпуска'",
+        "maxLength": 500,
+        "minLength": 2,
+        "title": "Query",
+        "type": "string"
+      },
+      "top_k": {
+        "default": 5,
+        "description": "Number of articles",
+        "maximum": 20,
+        "minimum": 1,
+        "title": "Top K",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "query"
+    ],
+    "title": "search_lawArguments",
+    "type": "object"
+  },
+  "name": "search_law",
+  "outputSchema": {
+    "$defs": {
+      "LawArticleHit": {
+        "additionalProperties": false,
+        "properties": {
+          "article_number": {
+            "title": "Article Number",
+            "type": "string"
+          },
+          "citation_id": {
+            "description": "Stable id to cite, e.g. kz-law:K1500000414:ru:88",
+            "title": "Citation Id",
+            "type": "string"
+          },
+          "code": {
+            "description": "Adilet document code",
+            "title": "Code",
+            "type": "string"
+          },
+          "code_alias": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Short alias of the act, e.g. labour",
+            "title": "Code Alias"
+          },
+          "heading": {
+            "title": "Heading",
+            "type": "string"
+          },
+          "law_title": {
+            "title": "Law Title",
+            "type": "string"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Retrieval score; comparable within one result",
+            "title": "Score"
+          },
+          "snippet": {
+            "description": "Beginning of the article text",
+            "title": "Snippet",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "description": "Link to the article on adilet.zan.kz",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "citation_id",
+          "code",
+          "code_alias",
+          "law_title",
+          "article_number",
+          "title",
+          "heading",
+          "snippet",
+          "url",
+          "score"
+        ],
+        "title": "LawArticleHit",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "code": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Code"
+      },
+      "lang": {
+        "enum": [
+          "ru",
+          "kk"
+        ],
+        "title": "Lang",
+        "type": "string"
+      },
+      "query": {
+        "title": "Query",
+        "type": "string"
+      },
+      "results": {
+        "items": {
+          "$ref": "#/$defs/LawArticleHit"
+        },
+        "title": "Results",
+        "type": "array"
+      },
+      "retriever": {
+        "description": "Backend that produced the results",
+        "title": "Retriever",
+        "type": "string"
+      }
+    },
+    "required": [
+      "query",
+      "lang",
+      "code",
+      "retriever",
+      "results"
+    ],
+    "title": "SearchLawResult",
+    "type": "object"
+  },
+  "title": "Search Kazakhstan legislation"
+}

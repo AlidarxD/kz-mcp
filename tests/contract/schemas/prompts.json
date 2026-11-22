@@ -1,0 +1,51 @@
+[
+  {
+    "arguments": [
+      {
+        "name": "code",
+        "required": true
+      },
+      {
+        "name": "article_number",
+        "required": true
+      }
+    ],
+    "description": "Compare the Russian and Kazakh editions of one article",
+    "name": "compare_languages",
+    "title": "Compare Russian and Kazakh texts"
+  },
+  {
+    "arguments": [
+      {
+        "name": "code",
+        "required": true
+      },
+      {
+        "name": "article_number",
+        "required": true
+      },
+      {
+        "name": "lang",
+        "required": false
+      }
+    ],
+    "description": "Explain one article of a Kazakhstan code in plain language, citing it",
+    "name": "explain_article",
+    "title": "Explain an article with citations"
+  },
+  {
+    "arguments": [
+      {
+        "name": "question",
+        "required": true
+      },
+      {
+        "name": "lang",
+        "required": false
+      }
+    ],
+    "description": "Answer a question about Kazakhstan law using only retrieved articles",
+    "name": "legal_question",
+    "title": "Answer a legal question from the law"
+  }
+]
