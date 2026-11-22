@@ -19,6 +19,18 @@ SNIPPET_CHARS = 400
 SOURCE = "adilet.zan.kz (official legal information system of the Republic of Kazakhstan)"
 
 # Local index only: no side effects, same answer for the same index, no outside world.
+SEARCH_LAW_DESCRIPTION = (
+    "Find the articles of Kazakhstan's codes (Constitution, Civil, Labour, Tax, Criminal, "
+    "Administrative Offences) that answer a question, in Russian or Kazakh.\n\n"
+    "Hybrid search (BM25 + multilingual embeddings, reranked by a cross-encoder) over the "
+    "current editions from adilet.zan.kz. Returns snippets; call get_law_article for the full "
+    "text, and cite articles by citation_id and url. Not legal advice."
+)
+GET_LAW_ARTICLE_DESCRIPTION = (
+    "Full current text of one article of a Kazakhstan code, with a stable citation id and a "
+    "link to adilet.zan.kz."
+)
+
 LOCAL_READ_ONLY = ToolAnnotations(
     read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=False
 )
@@ -94,6 +106,7 @@ def to_article(a: RetrievedArticle) -> LawArticle:
 def register(server: MCPServer, retriever: LawRetriever) -> None:
     @server.tool(
         title="Search Kazakhstan legislation",
+        description=SEARCH_LAW_DESCRIPTION,
         annotations=LOCAL_READ_ONLY,
     )
     async def search_law(
@@ -104,12 +117,6 @@ def register(server: MCPServer, retriever: LawRetriever) -> None:
         ] = None,
         top_k: Annotated[int, Field(ge=1, le=20, description="Number of articles")] = 5,
     ) -> SearchLawResult:
-        """Find the articles of Kazakhstan's codes (Constitution, Civil, Labour, Tax,
-        Criminal, Administrative Offences) that answer a question, in Russian or Kazakh.
-
-        Hybrid search (BM25 + multilingual embeddings, reranked by a cross-encoder) over the
-        current editions from adilet.zan.kz. Returns snippets; call get_law_article for the
-        full text, and cite articles by citation_id and url. Not legal advice."""
         ngr = resolve_code(code).ngr if code else None
         found = await anyio.to_thread.run_sync(
             partial(retriever.search, query.strip(), lang, ngr, top_k)
@@ -124,6 +131,7 @@ def register(server: MCPServer, retriever: LawRetriever) -> None:
 
     @server.tool(
         title="Get an article of Kazakhstan legislation",
+        description=GET_LAW_ARTICLE_DESCRIPTION,
         annotations=LOCAL_READ_ONLY,
     )
     async def get_law_article(
@@ -131,8 +139,6 @@ def register(server: MCPServer, retriever: LawRetriever) -> None:
         article_number: ArticleNumber,
         lang: LangArg = "ru",
     ) -> LawArticle:
-        """Full current text of one article of a Kazakhstan code, with a stable citation id
-        and a link to adilet.zan.kz."""
         law = resolve_code(code)
         article = await anyio.to_thread.run_sync(
             partial(retriever.get_article, law.ngr, article_number, lang)

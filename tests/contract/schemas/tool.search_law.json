@@ -5,7 +5,7 @@
     "openWorldHint": false,
     "readOnlyHint": true
   },
-  "description": "Find the articles of Kazakhstan's codes (Constitution, Civil, Labour, Tax,\n        Criminal, Administrative Offences) that answer a question, in Russian or Kazakh.\n\n        Hybrid search (BM25 + multilingual embeddings, reranked by a cross-encoder) over the\n        current editions from adilet.zan.kz. Returns snippets; call get_law_article for the\n        full text, and cite articles by citation_id and url. Not legal advice.",
+  "description": "Find the articles of Kazakhstan's codes (Constitution, Civil, Labour, Tax, Criminal, Administrative Offences) that answer a question, in Russian or Kazakh.\n\nHybrid search (BM25 + multilingual embeddings, reranked by a cross-encoder) over the current editions from adilet.zan.kz. Returns snippets; call get_law_article for the full text, and cite articles by citation_id and url. Not legal advice.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {

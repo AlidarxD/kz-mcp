@@ -5,7 +5,7 @@
     "openWorldHint": false,
     "readOnlyHint": true
   },
-  "description": "Full current text of one article of a Kazakhstan code, with a stable citation id\n        and a link to adilet.zan.kz.",
+  "description": "Full current text of one article of a Kazakhstan code, with a stable citation id and a link to adilet.zan.kz.",
   "inputSchema": {
     "additionalProperties": false,
     "properties": {
